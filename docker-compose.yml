@@ -10,7 +10,7 @@ services:
       - DB_PATH=/app/data/belajar.db
       - JWT_SECRET=belajar_secret_token_2026_super
     volumes:
-      - ./data:/app/data
+      - belajar_data:/app/data
     networks:
       - belajar_net
 
@@ -27,6 +27,11 @@ services:
     networks:
       - belajar_net
 
+volumes:
+  belajar_data:
+    name: belajar_data
+
 networks:
   belajar_net:
     driver: bridge
+
