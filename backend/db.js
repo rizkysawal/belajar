@@ -12,8 +12,9 @@ if (!fs.existsSync(dbDir)) {
 
 const db = new Database(dbPath);
 
-// Enable WAL mode & foreign keys
+// Enable WAL mode, foreign keys, & normal sync for reliability
 db.pragma('journal_mode = WAL');
+db.pragma('synchronous = NORMAL');
 db.pragma('foreign_keys = ON');
 
 function initDatabase() {

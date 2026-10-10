@@ -51,6 +51,35 @@ app.use((err, req, res, next) => {
   res.status(500).json({ success: false, message: 'Terjadi kesalahan internal pada server' });
 });
 
-app.listen(PORT, '0.0.0.0', () => {
+const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 EduTech Backend running on http://0.0.0.0:${PORT}`);
 });
+
+// Graceful Shutdown to ensure SQLite flushes WAL to disk cleanly before exit
+function gracefulShutdown(signal) {
+  console.log(`\n🛑 Received ${signal}. Starting graceful shutdown...`);
+  server.close(() => {
+    console.log('HTTP server closed.');
+    try {
+      if (db) {
+        console.log('Checkpointing SQLite WAL...');
+        db.pragma('wal_checkpoint(TRUNCATE)');
+        db.close();
+        console.log('✅ SQLite database closed cleanly.');
+      }
+    } catch (err) {
+      console.error('Error closing SQLite database:', err);
+    }
+    process.exit(0);
+  });
+
+  // Force exit if shutdown takes too long (5s timeout)
+  setTimeout(() => {
+    console.error('⚠️ Force shutdown timed out. Exiting now.');
+    process.exit(1);
+  }, 5000);
+}
+
+process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+
