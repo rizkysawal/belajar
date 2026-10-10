@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Petualangan Tata Surya - Sains Seru</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: radial-gradient(circle at 50% 20%, #1e1b4b, #090d16 85%);
+      color: #f8fafc;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      overflow-x: hidden;
+    }
+    .space-card {
+      width: 100%;
+      max-width: 640px;
+      background: rgba(30, 41, 59, 0.7);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 28px;
+      padding: 32px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255,255,255,0.1);
+      position: relative;
+    }
+    .header-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      background: rgba(99, 102, 241, 0.15);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #a5b4fc;
+      margin-bottom: 16px;
+      font-family: 'Fredoka', sans-serif;
+    }
+    .progress-bar-bg {
+      width: 100%;
+      height: 10px;
+      background: rgba(15, 23, 42, 0.7);
+      border-radius: 999px;
+      margin-bottom: 24px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #6366f1, #a855f7);
+      border-radius: 999px;
+      transition: width 0.4s ease;
+    }
+    .question-title {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      line-height: 1.4;
+      margin-bottom: 24px;
+      color: #ffffff;
+    }
+    .options-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .option-btn {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px 20px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 18px;
+      color: #e2e8f0;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      text-align: left;
+    }
+    .option-btn:hover:not(:disabled) {
+      background: rgba(99, 102, 241, 0.15);
+      border-color: rgba(99, 102, 241, 0.4);
+      transform: translateY(-2px);
+    }
+    .option-btn.correct {
+      background: rgba(16, 185, 129, 0.2) !important;
+      border-color: #10b981 !important;
+      color: #34d399 !important;
+    }
+    .option-btn.wrong {
+      background: rgba(239, 68, 68, 0.2) !important;
+      border-color: #ef4444 !important;
+      color: #f87171 !important;
+    }
+    .explanation-box {
+      margin-top: 16px;
+      padding: 14px 18px;
+      border-radius: 16px;
+      font-size: 13px;
+      line-height: 1.5;
+      display: none;
+    }
+    .explanation-box.correct {
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: #a7f3d0;
+      display: block;
+    }
+    .explanation-box.wrong {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #fecaca;
+      display: block;
+    }
+    .btn-action {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 18px;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      color: white;
+      font-size: 16px;
+      font-weight: 700;
+      font-family: 'Fredoka', sans-serif;
+      cursor: pointer;
+      box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.4);
+      transition: all 0.2s ease;
+      display: none;
+    }
+    .btn-action:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 15px 30px -5px rgba(99, 102, 241, 0.6);
+    }
+    .result-screen {
+      display: none;
+      text-align: center;
+      padding: 20px 0;
+    }
+    .result-screen.active {
+      display: block;
+    }
+    .big-icon {
+      font-size: 64px;
+      margin-bottom: 16px;
+      animation: bounce 2s infinite;
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+  </style>
+</head>
+<body>
+  <div class="space-card" id="quizCard">
+    <div id="quizContent">
+      <div class="header-tag">
+        <span>🚀 Modul Sains: Tata Surya</span>
+      </div>
+
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" id="progressBar" style="width: 20%;"></div>
+      </div>
+
+      <div style="font-size: 13px; color: #94a3b8; margin-bottom: 8px; font-weight: 600;" id="questionCounter">
+        Pertanyaan 1 dari 5
+      </div>
+
+      <h2 class="question-title" id="questionText">
+        Memuat pertanyaan...
+      </h2>
+
+      <div class="options-grid" id="optionsGrid"></div>
+
+      <div class="explanation-box" id="explanationBox"></div>
+
+      <button class="btn-action" id="nextBtn" onclick="nextQuestion()">
+        Lanjut ke Pertanyaan Berikutnya ➔
+      </button>
+    </div>
+
+    <!-- Final Result Screen -->
+    <div class="result-screen" id="resultScreen">
+      <div class="big-icon">🪐</div>
+      <h2 style="font-family: 'Fredoka', sans-serif; font-size: 28px; margin-bottom: 8px; color: #ffffff;" id="resultTitle">
+        Misi Galaksi Berhasil!
+      </h2>
+      <p style="color: #94a3b8; font-size: 14px; margin-bottom: 24px;" id="resultDesc">
+        Kamu telah menyelesaikan petualangan Tata Surya dengan sangat hebat!
+      </p>
+
+      <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 20px; margin-bottom: 24px;">
+        <div style="font-size: 12px; color: #94a3b8;">Nilai Akhir Kamu:</div>
+        <div style="font-family: 'Fredoka', sans-serif; font-size: 48px; font-weight: 700; color: #34d399; margin: 4px 0;" id="finalScoreText">
+          100
+        </div>
+        <div style="font-size: 14px; color: #fbbf24;" id="starText">⭐⭐⭐ (3 Bintang Penuh)</div>
+      </div>
+
+      <button class="btn-action" id="finishBtn" style="display: block;" onclick="sendScoreToParent()">
+        Kirim Skor & Ambil Bintang Kamu! 🌟
+      </button>
+    </div>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        question: "Planet manakah yang paling besar di Tata Surya kita?",
+        options: ["Mars", "Bumi", "Jupiter", "Venus"],
+        answer: 2,
+        explanation: "Benar sekali! Jupiter adalah planet terbesar di tata surya kita, ukurannya sangat raksasa!"
+      },
+      {
+        question: "Bintang terdekat dengan Bumi yang memancarkan panas dan cahaya adalah?",
+        options: ["Bulan", "Matahari", "Komet Halley", "Bintang Polaris"],
+        answer: 1,
+        explanation: "Hebat! Matahari adalah bintang pusat tata surya kita yang memberi cahaya bagi kehidupan di Bumi."
+      },
+      {
+        question: "Planet yang sering dijuluki 'Planet Merah' karena warna tanahnya adalah?",
+        options: ["Merkurius", "Mars", "Saturnus", "Neptunus"],
+        answer: 1,
+        explanation: "Tepat sekali! Mars berwarna kemerahan karena permukaannya mengandung banyak oksida besi atau karat."
+      },
+      {
+        question: "Planet yang paling terkenal dengan cincinnya yang sangat indah adalah?",
+        options: ["Saturnus", "Bumi", "Uranus", "Jupiter"],
+        answer: 0,
+        explanation: "Keren! Saturnus dikelilingi ribuan cincin es dan batu yang memukau."
+      },
+      {
+        question: "Apakah nama satelit alami yang setia mengelilingi planet Bumi?",
+        options: ["Matahari", "Satelit Buatan", "Bulan", "Asteroid"],
+        answer: 2,
+        explanation: "Luar biasa! Bulan adalah satelit alami Bumi yang tampak terang di malam hari."
+      }
+    ];
+
+    let currentQ = 0;
+    let correctAnswers = 0;
+    let answered = false;
+
+    function renderQuestion() {
+      answered = false;
+      const q = questions[currentQ];
+      document.getElementById('questionCounter').innerText = `Pertanyaan ${currentQ + 1} dari ${questions.length}`;
+      document.getElementById('questionText').innerText = q.question;
+      document.getElementById('progressBar').style.width = `${((currentQ + 1) / questions.length) * 100}%`;
+
+      const optionsGrid = document.getElementById('optionsGrid');
+      optionsGrid.innerHTML = '';
+
+      const expBox = document.getElementById('explanationBox');
+      expBox.className = 'explanation-box';
+      expBox.style.display = 'none';
+
+      document.getElementById('nextBtn').style.display = 'none';
+
+      q.options.forEach((opt, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.innerHTML = `<span style="width: 28px; height: 28px; border-radius: 8px; background: rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700;">${String.fromCharCode(65 + idx)}</span><span>${opt}</span>`;
+        btn.onclick = () => selectOption(idx);
+        optionsGrid.appendChild(btn);
+      });
+    }
+
+    function selectOption(selectedIndex) {
+      if (answered) return;
+      answered = true;
+
+      const q = questions[currentQ];
+      const buttons = document.querySelectorAll('.option-btn');
+      const expBox = document.getElementById('explanationBox');
+
+      buttons.forEach((btn, idx) => {
+        btn.disabled = true;
+        if (idx === q.answer) {
+          btn.classList.add('correct');
+        } else if (idx === selectedIndex) {
+          btn.classList.add('wrong');
+        }
+      });
+
+      if (selectedIndex === q.answer) {
+        correctAnswers++;
+        expBox.className = 'explanation-box correct';
+        expBox.innerHTML = `✅ <strong>Jawaban Kamu Benar!</strong> ${q.explanation}`;
+      } else {
+        expBox.className = 'explanation-box wrong';
+        expBox.innerHTML = `💡 <strong>Ups, kurang tepat!</strong> Jawaban yang benar adalah <strong>${q.options[q.answer]}</strong>. ${q.explanation}`;
+      }
+      expBox.style.display = 'block';
+
+      const nextBtn = document.getElementById('nextBtn');
+      if (currentQ < questions.length - 1) {
+        nextBtn.innerText = 'Lanjut ke Pertanyaan Berikutnya ➔';
+      } else {
+        nextBtn.innerText = 'Lihat Hasil Belajar Kamu 🌟';
+      }
+      nextBtn.style.display = 'block';
+    }
+
+    function nextQuestion() {
+      if (currentQ < questions.length - 1) {
+        currentQ++;
+        renderQuestion();
+      } else {
+        showResult();
+      }
+    }
+
+    let finalScore = 0;
+
+    function showResult() {
+      document.getElementById('quizContent').style.display = 'none';
+      document.getElementById('resultScreen').classList.add('active');
+
+      finalScore = Math.round((correctAnswers / questions.length) * 100);
+      document.getElementById('finalScoreText').innerText = finalScore;
+
+      const starText = document.getElementById('starText');
+      if (finalScore >= 90) {
+        starText.innerText = '⭐⭐⭐ (3 Bintang Penuh - Sempurna!)';
+      } else if (finalScore >= 70) {
+        starText.innerText = '⭐⭐ (2 Bintang - Hebat Sekali!)';
+      } else {
+        starText.innerText = '⭐ (1 Bintang - Ayo Terus Berlatih!)';
+      }
+
+      // Automatically post score on completion
+      sendScoreToParent();
+    }
+
+    function sendScoreToParent() {
+      console.log('Sending postMessage QUIZ_COMPLETED:', { score: finalScore, total: 100 });
+      window.parent.postMessage({
+        type: 'QUIZ_COMPLETED',
+        score: finalScore,
+        total: 100
+      }, '*');
+
+      const finishBtn = document.getElementById('finishBtn');
+      finishBtn.innerText = '✅ Skor Berhasil Dikirim!';
+      finishBtn.style.background = '#10b981';
+      finishBtn.disabled = true;
+    }
+
+    // Start on load
+    renderQuestion();
+  </script>
+</body>
+</html>

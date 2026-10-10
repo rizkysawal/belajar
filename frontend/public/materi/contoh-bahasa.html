@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dunia Satwa & Kosakata Inggris - Bahasa Ceria</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: radial-gradient(circle at 50% 20%, #4a044e, #090d16 85%);
+      color: #f8fafc;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .lang-card {
+      width: 100%;
+      max-width: 640px;
+      background: rgba(30, 41, 59, 0.7);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 28px;
+      padding: 32px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    }
+    .header-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      background: rgba(236, 72, 153, 0.15);
+      border: 1px solid rgba(236, 72, 153, 0.3);
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #f472b6;
+      margin-bottom: 16px;
+      font-family: 'Fredoka', sans-serif;
+    }
+    .progress-bar-bg {
+      width: 100%;
+      height: 10px;
+      background: rgba(15, 23, 42, 0.7);
+      border-radius: 999px;
+      margin-bottom: 24px;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #ec4899, #a855f7);
+      border-radius: 999px;
+      transition: width 0.4s ease;
+    }
+    .animal-display {
+      background: rgba(15, 23, 42, 0.7);
+      border: 2px dashed rgba(236, 72, 153, 0.3);
+      border-radius: 24px;
+      padding: 24px;
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    .animal-emoji {
+      font-size: 72px;
+      margin-bottom: 8px;
+      display: inline-block;
+      animation: bounce 2s infinite;
+    }
+    .animal-clue {
+      font-size: 14px;
+      color: #cbd5e1;
+      font-weight: 600;
+    }
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+    .option-btn {
+      padding: 16px 20px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 18px;
+      color: #ffffff;
+      font-family: 'Fredoka', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      text-align: center;
+    }
+    .option-btn:hover:not(:disabled) {
+      background: rgba(236, 72, 153, 0.15);
+      border-color: rgba(236, 72, 153, 0.4);
+      transform: translateY(-2px);
+    }
+    .option-btn.correct {
+      background: rgba(16, 185, 129, 0.25) !important;
+      border-color: #10b981 !important;
+      color: #34d399 !important;
+    }
+    .option-btn.wrong {
+      background: rgba(239, 68, 68, 0.25) !important;
+      border-color: #ef4444 !important;
+      color: #f87171 !important;
+    }
+    .btn-action {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 18px;
+      background: linear-gradient(135deg, #ec4899, #db2777);
+      color: white;
+      font-size: 16px;
+      font-weight: 700;
+      font-family: 'Fredoka', sans-serif;
+      cursor: pointer;
+      box-shadow: 0 10px 25px -5px rgba(236, 72, 153, 0.4);
+      display: none;
+    }
+    .btn-action:hover { transform: translateY(-2px); }
+    .result-screen { display: none; text-align: center; }
+    .result-screen.active { display: block; }
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+  </style>
+</head>
+<body>
+  <div class="lang-card">
+    <div id="quizContent">
+      <div class="header-tag">
+        <span>📚 Bahasa Inggris: Dunia Hewan (Animals)</span>
+      </div>
+
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" id="progressBar" style="width: 25%;"></div>
+      </div>
+
+      <div style="font-size: 13px; color: #94a3b8; margin-bottom: 8px; font-weight: 600;" id="questionCounter">
+        Soal 1 dari 4
+      </div>
+
+      <div class="animal-display">
+        <div class="animal-emoji" id="animalEmoji">🦁</div>
+        <div class="animal-clue" id="animalClue">Apa bahasa Inggris untuk hewan ini?</div>
+      </div>
+
+      <div class="options-grid" id="optionsGrid"></div>
+
+      <button class="btn-action" id="nextBtn" onclick="nextQuestion()">
+        Lanjut ke Soal Berikutnya ➔
+      </button>
+    </div>
+
+    <div class="result-screen" id="resultScreen">
+      <div style="font-size: 64px; margin-bottom: 12px;">🦄</div>
+      <h2 style="font-family: 'Fredoka', sans-serif; font-size: 28px; margin-bottom: 8px; color: #ffffff;">
+        Wonderful! Heven Hebat!
+      </h2>
+      <p style="color: #94a3b8; font-size: 14px; margin-bottom: 24px;">
+        Kamu berhasil mengenali satwa dalam Bahasa Inggris dengan sangat pintar!
+      </p>
+
+      <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 20px; margin-bottom: 24px;">
+        <div style="font-size: 12px; color: #94a3b8;">Nilai Akhir:</div>
+        <div style="font-family: 'Fredoka', sans-serif; font-size: 48px; font-weight: 700; color: #f472b6; margin: 4px 0;" id="finalScoreText">
+          100
+        </div>
+        <div style="font-size: 14px; color: #fbbf24;" id="starText">⭐⭐⭐ (3 Bintang Penuh)</div>
+      </div>
+
+      <button class="btn-action" id="finishBtn" style="display: block;" onclick="sendScoreToParent()">
+        Kirim Skor & Ambil Bintang Kamu! 🌟
+      </button>
+    </div>
+  </div>
+
+  <script>
+    const questions = [
+      { emoji: "🦁", clue: "Hewan raja hutan: Singa", options: ["Tiger", "Lion", "Bear", "Elephant"], answer: 1 },
+      { emoji: "🐬", clue: "Hewan laut cerdas: Lumba-lumba", options: ["Shark", "Whale", "Dolphin", "Turtle"], answer: 2 },
+      { emoji: "🐘", clue: "Hewan bertubuh besar dengan belalai: Gajah", options: ["Elephant", "Rhino", "Hippo", "Giraffe"], answer: 0 },
+      { emoji: "🦋", clue: "Serangga bersayap indah: Kupu-kupu", options: ["Bee", "Ant", "Dragonfly", "Butterfly"], answer: 3 }
+    ];
+
+    let currentQ = 0;
+    let correctCount = 0;
+    let answered = false;
+
+    function renderQuestion() {
+      answered = false;
+      const q = questions[currentQ];
+      document.getElementById('questionCounter').innerText = `Soal ${currentQ + 1} dari ${questions.length}`;
+      document.getElementById('animalEmoji').innerText = q.emoji;
+      document.getElementById('animalClue').innerText = q.clue;
+      document.getElementById('progressBar').style.width = `${((currentQ + 1) / questions.length) * 100}%`;
+
+      const optionsGrid = document.getElementById('optionsGrid');
+      optionsGrid.innerHTML = '';
+      document.getElementById('nextBtn').style.display = 'none';
+
+      q.options.forEach((opt, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.innerText = opt;
+        btn.onclick = () => selectOption(idx);
+        optionsGrid.appendChild(btn);
+      });
+    }
+
+    function selectOption(selectedIdx) {
+      if (answered) return;
+      answered = true;
+
+      const q = questions[currentQ];
+      const buttons = document.querySelectorAll('.option-btn');
+
+      buttons.forEach((btn, idx) => {
+        btn.disabled = true;
+        if (idx === q.answer) btn.classList.add('correct');
+        else if (idx === selectedIdx) btn.classList.add('wrong');
+      });
+
+      if (selectedIdx === q.answer) correctCount++;
+
+      const nextBtn = document.getElementById('nextBtn');
+      nextBtn.innerText = currentQ < questions.length - 1 ? 'Lanjut ke Soal Berikutnya ➔' : 'Lihat Hasil Belajar 🌟';
+      nextBtn.style.display = 'block';
+    }
+
+    function nextQuestion() {
+      if (currentQ < questions.length - 1) {
+        currentQ++;
+        renderQuestion();
+      } else {
+        showResult();
+      }
+    }
+
+    let finalScore = 0;
+
+    function showResult() {
+      document.getElementById('quizContent').style.display = 'none';
+      document.getElementById('resultScreen').classList.add('active');
+
+      finalScore = Math.round((correctCount / questions.length) * 100);
+      document.getElementById('finalScoreText').innerText = finalScore;
+
+      const starText = document.getElementById('starText');
+      if (finalScore >= 90) starText.innerText = '⭐⭐⭐ (3 Bintang Penuh)';
+      else if (finalScore >= 70) starText.innerText = '⭐⭐ (2 Bintang)';
+      else starText.innerText = '⭐ (1 Bintang)';
+
+      sendScoreToParent();
+    }
+
+    function sendScoreToParent() {
+      window.parent.postMessage({
+        type: 'QUIZ_COMPLETED',
+        score: finalScore,
+        total: 100
+      }, '*');
+
+      const finishBtn = document.getElementById('finishBtn');
+      finishBtn.innerText = '✅ Skor Berhasil Dikirim!';
+      finishBtn.style.background = '#10b981';
+      finishBtn.disabled = true;
+    }
+
+    renderQuestion();
+  </script>
+</body>
+</html>

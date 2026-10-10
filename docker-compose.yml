@@ -1,0 +1,32 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: belajar_backend
+    restart: unless-stopped
+    environment:
+      - PORT=5000
+      - DB_PATH=/app/data/belajar.db
+      - JWT_SECRET=belajar_secret_token_2026_super
+    volumes:
+      - ./data:/app/data
+    networks:
+      - belajar_net
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: belajar_frontend
+    restart: unless-stopped
+    ports:
+      - "8085:80"
+    depends_on:
+      - backend
+    networks:
+      - belajar_net
+
+networks:
+  belajar_net:
+    driver: bridge
