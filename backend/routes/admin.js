@@ -657,12 +657,13 @@ router.post('/categories', requireParent, (req, res) => {
       return res.status(400).json({ success: false, message: `Kategori "${trimmedName}" sudah ada` });
     }
 
-    const storedGrades = Array.isArray(target_grades) ? JSON.stringify(target_grades) : (target_grades || 'all');
+    const maxOrderRow = db.prepare('SELECT COALESCE(MAX(display_order), 0) as max_order FROM categories').get();
+    const nextOrder = (maxOrderRow?.max_order || 0) + 1;
 
     const result = db.prepare(`
-      INSERT INTO categories (name, icon, color, description, target_grades, is_active)
-      VALUES (?, ?, ?, ?, ?, 1)
-    `).run(trimmedName, icon, color, description ? description.trim() : '', storedGrades);
+      INSERT INTO categories (name, icon, color, description, target_grades, display_order, is_active)
+      VALUES (?, ?, ?, ?, ?, ?, 1)
+    `).run(trimmedName, icon, color, description ? description.trim() : '', storedGrades, nextOrder);
 
     const newCat = db.prepare('SELECT * FROM categories WHERE id = ?').get(result.lastInsertRowid);
 
