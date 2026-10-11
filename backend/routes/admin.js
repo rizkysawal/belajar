@@ -657,6 +657,7 @@ router.post('/categories', requireParent, (req, res) => {
       return res.status(400).json({ success: false, message: `Kategori "${trimmedName}" sudah ada` });
     }
 
+    const storedGrades = Array.isArray(target_grades) ? JSON.stringify(target_grades) : (target_grades || 'all');
     const maxOrderRow = db.prepare('SELECT COALESCE(MAX(display_order), 0) as max_order FROM categories').get();
     const nextOrder = (maxOrderRow?.max_order || 0) + 1;
 
