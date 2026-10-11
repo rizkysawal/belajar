@@ -88,6 +88,22 @@ function initDatabase() {
     );
   `);
 
+  // Migration: ensure columns exist in categories table
+  try {
+    const catCols = db.prepare('PRAGMA table_info(categories)').all().map(c => c.name);
+    if (!catCols.includes('target_grades')) {
+      db.exec("ALTER TABLE categories ADD COLUMN target_grades TEXT DEFAULT 'all'");
+    }
+    if (!catCols.includes('display_order')) {
+      db.exec("ALTER TABLE categories ADD COLUMN display_order INTEGER DEFAULT 0");
+    }
+    if (!catCols.includes('is_active')) {
+      db.exec("ALTER TABLE categories ADD COLUMN is_active INTEGER DEFAULT 1");
+    }
+  } catch (err) {
+    console.warn('Categories column check:', err.message);
+  }
+
   seedUsersOnly();
   seedCategoriesOnly();
 }

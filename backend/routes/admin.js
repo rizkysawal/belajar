@@ -678,7 +678,7 @@ router.post('/categories', requireParent, (req, res) => {
     });
   } catch (err) {
     console.error('Error creating category:', err);
-    res.status(500).json({ success: false, message: 'Gagal menambahkan kategori' });
+    res.status(500).json({ success: false, message: 'Gagal menambahkan kategori: ' + err.message });
   }
 });
 
@@ -740,7 +740,7 @@ router.put('/categories/:id', requireParent, (req, res) => {
     });
   } catch (err) {
     console.error('Error updating category:', err);
-    res.status(500).json({ success: false, message: 'Gagal memperbarui kategori' });
+    res.status(500).json({ success: false, message: 'Gagal memperbarui kategori: ' + err.message });
   }
 });
 
