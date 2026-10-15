@@ -133,7 +133,7 @@ export default function ModuleRunner({ user, module, onBack, onQuizFinished }) {
             score: scoreNum,
             totalQuestions: totalQ,
             percentage,
-            starsEarned: percentage >= 90 ? 3 : percentage >= 70 ? 2 : 1,
+            starsEarned: percentage >= 85 ? 5 : percentage >= 70 ? 4 : percentage >= 50 ? 3 : percentage >= 25 ? 2 : 1,
             passed: percentage >= 70,
             message: 'Tantangan Selesai!'
           });

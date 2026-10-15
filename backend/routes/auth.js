@@ -17,7 +17,7 @@ router.get('/users', (req, res) => {
         const stats = db.prepare(`
           SELECT 
             COUNT(id) as total_quizzes,
-            COALESCE(SUM(CASE WHEN percentage >= 90 THEN 3 WHEN percentage >= 70 THEN 2 ELSE 1 END), 0) as total_stars
+            COALESCE(SUM(CASE WHEN percentage >= 85 THEN 5 WHEN percentage >= 70 THEN 4 WHEN percentage >= 50 THEN 3 WHEN percentage >= 25 THEN 2 ELSE 1 END), 0) as total_stars
           FROM quiz_results
           WHERE user_id = ?
         `).get(user.id);
@@ -62,7 +62,7 @@ router.post('/login', (req, res) => {
     let totalStars = 0;
     if (user.role === 'student') {
       const stats = db.prepare(`
-        SELECT COALESCE(SUM(CASE WHEN percentage >= 90 THEN 3 WHEN percentage >= 70 THEN 2 ELSE 1 END), 0) as total_stars
+        SELECT COALESCE(SUM(CASE WHEN percentage >= 85 THEN 5 WHEN percentage >= 70 THEN 4 WHEN percentage >= 50 THEN 3 WHEN percentage >= 25 THEN 2 ELSE 1 END), 0) as total_stars
         FROM quiz_results
         WHERE user_id = ?
       `).get(user.id);
@@ -106,7 +106,7 @@ router.get('/me', (req, res) => {
     let totalStars = 0;
     if (user.role === 'student') {
       const stats = db.prepare(`
-        SELECT COALESCE(SUM(CASE WHEN percentage >= 90 THEN 3 WHEN percentage >= 70 THEN 2 ELSE 1 END), 0) as total_stars
+        SELECT COALESCE(SUM(CASE WHEN percentage >= 85 THEN 5 WHEN percentage >= 70 THEN 4 WHEN percentage >= 50 THEN 3 WHEN percentage >= 25 THEN 2 ELSE 1 END), 0) as total_stars
         FROM quiz_results
         WHERE user_id = ?
       `).get(user.id);
