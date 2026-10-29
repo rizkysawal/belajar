@@ -189,5 +189,54 @@ function seedStarterModules() {
 // Initialize tables and default users
 initDatabase();
 
+// Helper: Calculate total stars for a student taking only the highest result per unique module
+function getUserTotalStars(userId) {
+  if (!userId) return 0;
+  const row = db.prepare(`
+    SELECT COALESCE(SUM(
+      CASE 
+        WHEN best_pct >= 85 THEN 5 
+        WHEN best_pct >= 70 THEN 4 
+        WHEN best_pct >= 50 THEN 3 
+        WHEN best_pct >= 25 THEN 2 
+        ELSE 1 
+      END
+    ), 0) as total_stars
+    FROM (
+      SELECT module_id, MAX(percentage) as best_pct
+      FROM quiz_results
+      WHERE user_id = ?
+      GROUP BY module_id
+    )
+  `).get(userId);
+
+  return row ? row.total_stars : 0;
+}
+
+// Helper: Get user quiz stats with non-duplicating total stars
+function getUserQuizStats(userId) {
+  if (!userId) {
+    return { totalStars: 0, totalQuizzes: 0, averageScore: 0, totalDurationSeconds: 0 };
+  }
+  const totalStars = getUserTotalStars(userId);
+  const quizRow = db.prepare(`
+    SELECT 
+      COUNT(id) as total_quizzes,
+      COALESCE(AVG(percentage), 0) as average_score,
+      COALESCE(SUM(duration_seconds), 0) as total_duration_seconds
+    FROM quiz_results
+    WHERE user_id = ?
+  `).get(userId);
+
+  return {
+    totalStars,
+    totalQuizzes: quizRow ? quizRow.total_quizzes : 0,
+    averageScore: quizRow ? Math.round(quizRow.average_score) : 0,
+    totalDurationSeconds: quizRow ? quizRow.total_duration_seconds : 0
+  };
+}
+
 module.exports = db;
 module.exports.seedStarterModules = seedStarterModules;
+module.exports.getUserTotalStars = getUserTotalStars;
+module.exports.getUserQuizStats = getUserQuizStats;

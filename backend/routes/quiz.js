@@ -37,14 +37,8 @@ router.post('/submit', (req, res) => {
 
     const starsEarned = calculateStars(percentage);
 
-    // Fetch updated total stats for the user
-    const stats = db.prepare(`
-      SELECT 
-        COUNT(id) as total_quizzes,
-        COALESCE(SUM(CASE WHEN percentage >= 85 THEN 5 WHEN percentage >= 70 THEN 4 WHEN percentage >= 50 THEN 3 WHEN percentage >= 25 THEN 2 ELSE 1 END), 0) as total_stars
-      FROM quiz_results
-      WHERE user_id = ?
-    `).get(userId);
+    // Fetch updated total stats for the user (highest stars per unique module)
+    const stats = db.getUserQuizStats(userId);
 
     const moduleInfo = db.prepare('SELECT title, category FROM modules WHERE id = ?').get(moduleId);
 
@@ -55,8 +49,8 @@ router.post('/submit', (req, res) => {
       totalQuestions: totalQ,
       percentage,
       starsEarned,
-      totalStars: stats.total_stars,
-      totalQuizzes: stats.total_quizzes,
+      totalStars: stats.totalStars,
+      totalQuizzes: stats.totalQuizzes,
       moduleTitle: moduleInfo ? moduleInfo.title : 'Materi',
       category: moduleInfo ? moduleInfo.category : 'Umum',
       passed: percentage >= 70,
@@ -78,15 +72,7 @@ router.get('/user-stats/:userId', (req, res) => {
       return res.status(404).json({ success: false, message: 'Pengguna tidak ditemukan' });
     }
 
-    const stats = db.prepare(`
-      SELECT 
-        COUNT(id) as total_quizzes,
-        COALESCE(SUM(CASE WHEN percentage >= 85 THEN 5 WHEN percentage >= 70 THEN 4 WHEN percentage >= 50 THEN 3 WHEN percentage >= 25 THEN 2 ELSE 1 END), 0) as total_stars,
-        COALESCE(AVG(percentage), 0) as average_score,
-        COALESCE(SUM(duration_seconds), 0) as total_duration_seconds
-      FROM quiz_results
-      WHERE user_id = ?
-    `).get(userId);
+    const stats = db.getUserQuizStats(userId);
 
     const history = db.prepare(`
       SELECT 
@@ -108,10 +94,10 @@ router.get('/user-stats/:userId', (req, res) => {
     res.json({
       success: true,
       stats: {
-        totalQuizzes: stats.total_quizzes,
-        totalStars: stats.total_stars,
-        averageScore: Math.round(stats.average_score),
-        totalMinutes: Math.round(stats.total_duration_seconds / 60)
+        totalQuizzes: stats.totalQuizzes,
+        totalStars: stats.totalStars,
+        averageScore: stats.averageScore,
+        totalMinutes: Math.round(stats.totalDurationSeconds / 60)
       },
       history
     });

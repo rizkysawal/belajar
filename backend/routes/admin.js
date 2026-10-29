@@ -35,21 +35,35 @@ router.get('/overview', requireParent, (req, res) => {
     // 2. All-time completed quizzes
     const totalQuizzes = db.prepare('SELECT COUNT(*) as count FROM quiz_results').get().count;
 
-    // 3. Stars comparison (Hebat vs Heven)
+    // 3. Stars comparison (Hebat vs Heven, taking highest stars per unique module)
     const userStars = db.prepare(`
       SELECT 
         u.id,
         u.name,
         u.avatar,
         u.grade,
-        COUNT(qr.id) as total_quizzes,
-        COALESCE(SUM(CASE WHEN qr.id IS NULL THEN 0 WHEN qr.percentage >= 85 THEN 5 WHEN qr.percentage >= 70 THEN 4 WHEN qr.percentage >= 50 THEN 3 WHEN qr.percentage >= 25 THEN 2 ELSE 1 END), 0) as total_stars,
-        COALESCE(AVG(qr.percentage), 0) as avg_score,
-        COALESCE(SUM(qr.duration_seconds), 0) as total_duration
+        (SELECT COUNT(id) FROM quiz_results WHERE user_id = u.id) as total_quizzes,
+        (SELECT COALESCE(AVG(percentage), 0) FROM quiz_results WHERE user_id = u.id) as avg_score,
+        (SELECT COALESCE(SUM(duration_seconds), 0) FROM quiz_results WHERE user_id = u.id) as total_duration,
+        COALESCE((
+          SELECT SUM(
+            CASE 
+              WHEN best_pct >= 85 THEN 5 
+              WHEN best_pct >= 70 THEN 4 
+              WHEN best_pct >= 50 THEN 3 
+              WHEN best_pct >= 25 THEN 2 
+              ELSE 1 
+            END
+          )
+          FROM (
+            SELECT module_id, MAX(percentage) as best_pct
+            FROM quiz_results
+            WHERE user_id = u.id
+            GROUP BY module_id
+          )
+        ), 0) as total_stars
       FROM users u
-      LEFT JOIN quiz_results qr ON u.id = qr.user_id
       WHERE u.role = 'student'
-      GROUP BY u.id
       ORDER BY u.id ASC
     `).all();
 

@@ -11,17 +11,11 @@ router.get('/users', (req, res) => {
   try {
     const users = db.prepare('SELECT id, name, role, avatar, grade FROM users ORDER BY id ASC').all();
     
-    // Also attach star count for each student profile
+    // Also attach star count for each student profile (highest stars per unique module)
     const usersWithStats = users.map(user => {
       if (user.role === 'student') {
-        const stats = db.prepare(`
-          SELECT 
-            COUNT(id) as total_quizzes,
-            COALESCE(SUM(CASE WHEN percentage >= 85 THEN 5 WHEN percentage >= 70 THEN 4 WHEN percentage >= 50 THEN 3 WHEN percentage >= 25 THEN 2 ELSE 1 END), 0) as total_stars
-          FROM quiz_results
-          WHERE user_id = ?
-        `).get(user.id);
-        return { ...user, totalStars: stats.total_stars, totalQuizzes: stats.total_quizzes };
+        const stats = db.getUserQuizStats(user.id);
+        return { ...user, totalStars: stats.totalStars, totalQuizzes: stats.totalQuizzes };
       }
       return user;
     });
@@ -58,15 +52,10 @@ router.post('/login', (req, res) => {
       { expiresIn: '7d' }
     );
 
-    // Calculate stars if student
+    // Calculate stars if student (highest stars per unique module)
     let totalStars = 0;
     if (user.role === 'student') {
-      const stats = db.prepare(`
-        SELECT COALESCE(SUM(CASE WHEN percentage >= 85 THEN 5 WHEN percentage >= 70 THEN 4 WHEN percentage >= 50 THEN 3 WHEN percentage >= 25 THEN 2 ELSE 1 END), 0) as total_stars
-        FROM quiz_results
-        WHERE user_id = ?
-      `).get(user.id);
-      totalStars = stats.total_stars;
+      totalStars = db.getUserTotalStars(user.id);
     }
 
     res.json({
@@ -105,12 +94,7 @@ router.get('/me', (req, res) => {
 
     let totalStars = 0;
     if (user.role === 'student') {
-      const stats = db.prepare(`
-        SELECT COALESCE(SUM(CASE WHEN percentage >= 85 THEN 5 WHEN percentage >= 70 THEN 4 WHEN percentage >= 50 THEN 3 WHEN percentage >= 25 THEN 2 ELSE 1 END), 0) as total_stars
-        FROM quiz_results
-        WHERE user_id = ?
-      `).get(user.id);
-      totalStars = stats.total_stars;
+      totalStars = db.getUserTotalStars(user.id);
     }
 
     res.json({ success: true, user: { ...user, totalStars } });
