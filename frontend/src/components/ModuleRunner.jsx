@@ -199,47 +199,56 @@ export default function ModuleRunner({ user, module, onBack, onQuizFinished }) {
   return (
     <div className="fixed inset-0 z-40 bg-slate-950 flex flex-col">
       {/* Top Runner Navigation Bar */}
-      <header className="h-16 px-4 sm:px-6 bg-slate-900 border-b border-slate-800 flex items-center justify-between gap-4 shrink-0 shadow-lg">
-        <div className="flex items-center gap-3">
+      <header className="h-16 px-3 sm:px-6 bg-slate-900/95 backdrop-blur-md border-b border-slate-800 flex items-center justify-between gap-2 sm:gap-4 shrink-0 shadow-lg z-20">
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
           <button
             onClick={onBack}
-            className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition-colors font-fun text-xs font-bold"
+            className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition-colors font-fun text-xs font-bold shrink-0 active:scale-95"
+            title="Kembali ke Dashboard"
           >
             <ArrowLeft className="w-4 h-4" />
-            <span>Kembali</span>
+            <span className="hidden xs:inline sm:inline">Kembali</span>
           </button>
-          <div className="h-5 w-px bg-slate-700 hidden sm:block" />
-          <h2 className="text-sm sm:text-base font-bold font-fun text-white line-clamp-1">
-            {module.title}
-          </h2>
-          <span className="hidden md:inline-block px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+          <div className="h-5 w-px bg-slate-700 hidden sm:block shrink-0" />
+          <div className="min-w-0 flex-1">
+            <h2 
+              className="text-xs sm:text-sm md:text-base font-bold font-fun text-white truncate"
+              title={module.title}
+            >
+              {module.title}
+            </h2>
+          </div>
+          <span 
+            className="hidden lg:inline-block px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 shrink-0 truncate max-w-[160px]"
+            title={module.category}
+          >
             {module.category}
           </span>
         </div>
 
-        <div className="flex items-center gap-3 sm:gap-4">
+        <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
           {/* Complete Module Button */}
           <button
             onClick={handleManualComplete}
             disabled={submitting}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-emerald-500/20 to-teal-500/20 hover:from-emerald-500/30 hover:to-teal-500/30 text-emerald-300 hover:text-white border border-emerald-500/40 text-xs font-bold font-fun transition-all active:scale-95 shadow-sm"
+            className="flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-emerald-500/20 to-teal-500/20 hover:from-emerald-500/30 hover:to-teal-500/30 text-emerald-300 hover:text-white border border-emerald-500/40 text-xs font-bold font-fun transition-all active:scale-95 shadow-sm shrink-0"
             title="Tandai selesai belajar dan raih bintang"
           >
-            <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+            <Sparkles className="w-3.5 h-3.5 text-amber-400 shrink-0" />
             <span className="hidden sm:inline">Selesai Belajar</span>
             <span className="sm:hidden">Selesai</span>
           </button>
 
           {/* Duration Clock */}
-          <div className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-slate-800/80 border border-slate-700/80 text-slate-300 text-xs font-mono font-medium">
-            <Clock className="w-3.5 h-3.5 text-indigo-400" />
+          <div className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-xl bg-slate-800/80 border border-slate-700/80 text-slate-300 text-xs font-mono font-medium shrink-0">
+            <Clock className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
             <span>{formatTimer(elapsedSeconds)}</span>
           </div>
 
           {/* Sound Toggle */}
           <button
             onClick={() => setSoundEnabled(!soundEnabled)}
-            className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors"
+            className="p-1.5 sm:p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors shrink-0"
             title={soundEnabled ? 'Matikan Suara' : 'Nyalakan Suara'}
           >
             {soundEnabled ? <Volume2 className="w-4 h-4 text-emerald-400" /> : <VolumeX className="w-4 h-4" />}
@@ -248,7 +257,7 @@ export default function ModuleRunner({ user, module, onBack, onQuizFinished }) {
           {/* Reload Module */}
           <button
             onClick={handleRestartModule}
-            className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors"
+            className="p-1.5 sm:p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors shrink-0"
             title="Muat Ulang Materi"
           >
             <RotateCcw className="w-4 h-4" />

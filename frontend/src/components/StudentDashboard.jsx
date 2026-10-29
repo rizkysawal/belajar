@@ -55,33 +55,47 @@ export default function StudentDashboard({ user, modules, onStartModule, onLogou
   });
 
   const getModuleIcon = (iconName, category) => {
-    switch (category?.toLowerCase()) {
-      case 'sains':
-        return <Rocket className="w-8 h-8 text-indigo-400" />;
-      case 'matematika':
-        return <Calculator className="w-8 h-8 text-amber-400" />;
-      case 'bahasa':
-        return <Languages className="w-8 h-8 text-pink-400" />;
-      default:
-        return <BookOpen className="w-8 h-8 text-sky-400" />;
+    const cat = category?.toLowerCase() || '';
+    if (cat.includes('sains') || cat.includes('science')) {
+      return <Rocket className="w-6 h-6 sm:w-7 sm:h-7 text-indigo-400 shrink-0" />;
     }
+    if (cat.includes('matematika') || cat.includes('math')) {
+      return <Calculator className="w-6 h-6 sm:w-7 sm:h-7 text-amber-400 shrink-0" />;
+    }
+    if (cat.includes('bahasa') || cat.includes('english') || cat.includes('mandarin')) {
+      return <Languages className="w-6 h-6 sm:w-7 sm:h-7 text-pink-400 shrink-0" />;
+    }
+    if (cat.includes('agama')) {
+      return <Heart className="w-6 h-6 sm:w-7 sm:h-7 text-emerald-400 shrink-0" />;
+    }
+    if (cat.includes('pancasila')) {
+      return <Award className="w-6 h-6 sm:w-7 sm:h-7 text-rose-400 shrink-0" />;
+    }
+    return <BookOpen className="w-6 h-6 sm:w-7 sm:h-7 text-sky-400 shrink-0" />;
   };
 
   const getCategoryColor = (category) => {
-    switch (category?.toLowerCase()) {
-      case 'sains':
-        return 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30';
-      case 'matematika':
-        return 'bg-amber-500/20 text-amber-300 border-amber-500/30';
-      case 'bahasa':
-        return 'bg-pink-500/20 text-pink-300 border-pink-500/30';
-      default:
-        return 'bg-sky-500/20 text-sky-300 border-sky-500/30';
+    const cat = category?.toLowerCase() || '';
+    if (cat.includes('sains') || cat.includes('science')) {
+      return 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30';
     }
+    if (cat.includes('matematika') || cat.includes('math')) {
+      return 'bg-amber-500/20 text-amber-300 border-amber-500/30';
+    }
+    if (cat.includes('bahasa') || cat.includes('english') || cat.includes('mandarin')) {
+      return 'bg-pink-500/20 text-pink-300 border-pink-500/30';
+    }
+    if (cat.includes('agama')) {
+      return 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30';
+    }
+    if (cat.includes('pancasila')) {
+      return 'bg-rose-500/20 text-rose-300 border-rose-500/30';
+    }
+    return 'bg-sky-500/20 text-sky-300 border-sky-500/30';
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 p-4 sm:p-8">
+    <div className="min-h-screen bg-slate-950 text-slate-100 p-3 sm:p-6 md:p-8 overflow-x-hidden w-full">
       {/* Top Header Bar */}
       <header className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 p-4 sm:p-6 rounded-3xl glass-panel shadow-2xl mb-8">
         <div className="flex items-center gap-4">
@@ -248,16 +262,19 @@ export default function StudentDashboard({ user, modules, onStartModule, onLogou
               return (
                 <div
                   key={mod.id}
-                  className="group relative flex flex-col justify-between rounded-3xl p-6 glass-card glass-card-hover border border-slate-700/50 hover:border-indigo-400/40 transition-all duration-300"
+                  className="group relative flex flex-col justify-between rounded-3xl p-5 sm:p-6 glass-card glass-card-hover border border-slate-700/50 hover:border-indigo-400/40 transition-all duration-300 w-full min-w-0 overflow-hidden"
                 >
                   {/* Top Tags */}
-                  <div>
-                    <div className="flex items-center justify-between gap-2 mb-4">
-                      <div className="flex items-center gap-1.5 flex-wrap">
-                        <span className={`text-xs font-bold px-3 py-1 rounded-full border ${getCategoryColor(mod.category)}`}>
+                  <div className="min-w-0">
+                    <div className="flex items-center justify-between gap-2 mb-3.5">
+                      <div className="flex items-center gap-1.5 flex-wrap min-w-0 flex-1">
+                        <span 
+                          className={`text-[11px] sm:text-xs font-bold px-2.5 sm:px-3 py-1 rounded-full border leading-tight ${getCategoryColor(mod.category)}`}
+                          title={mod.category}
+                        >
                           {mod.category}
                         </span>
-                        <span className="text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">
+                        <span className="text-[10px] sm:text-[11px] font-semibold px-2 sm:px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700 shrink-0">
                           {mod.target_grade === 'all' ? 'Semua Jenjang' : 
                            mod.target_grade?.toLowerCase() === 'hebat' ? '🚀 Khusus Hebat' :
                            mod.target_grade?.toLowerCase() === 'heven' ? '🦄 Khusus Heven' :
@@ -266,7 +283,10 @@ export default function StudentDashboard({ user, modules, onStartModule, onLogou
                       </div>
 
                       {/* Stars Earned Rating (1-5 Stars) */}
-                      <div className="flex items-center gap-0.5 bg-slate-900/60 px-2.5 py-1 rounded-full border border-slate-700/50">
+                      <div 
+                        className="flex items-center gap-0.5 bg-slate-900/70 px-2 sm:px-2.5 py-1 rounded-full border border-slate-700/50 shrink-0"
+                        title={`${stars} dari 5 bintang`}
+                      >
                         {[1, 2, 3, 4, 5].map((s) => (
                           <Star
                             key={s}
@@ -281,40 +301,43 @@ export default function StudentDashboard({ user, modules, onStartModule, onLogou
                     </div>
 
                     {/* Icon & Title */}
-                    <div className="flex items-start gap-4 mb-3">
-                      <div className="w-14 h-14 rounded-2xl bg-slate-800/80 border border-slate-700/60 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                    <div className="flex items-start gap-3.5 sm:gap-4 mb-3 min-w-0">
+                      <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-slate-800/80 border border-slate-700/60 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform shadow-inner">
                         {getModuleIcon(mod.icon, mod.category)}
                       </div>
-                      <div>
-                        <h3 className="text-xl font-bold font-fun text-white group-hover:text-indigo-300 transition-colors line-clamp-1">
+                      <div className="min-w-0 flex-1">
+                        <h3 
+                          className="text-base sm:text-lg font-bold font-fun text-white group-hover:text-indigo-300 transition-colors leading-snug break-words line-clamp-3"
+                          title={mod.title}
+                        >
                           {mod.title}
                         </h3>
                         {hasCompleted && (
-                          <span className="inline-flex items-center gap-1 text-[11px] text-emerald-400 font-semibold mt-0.5">
-                            <Award className="w-3 h-3" />
-                            Skor Terbaik: {mod.bestPercentage}%
+                          <span className="inline-flex items-center gap-1 text-[11px] text-emerald-400 font-semibold mt-1">
+                            <Award className="w-3.5 h-3.5 shrink-0" />
+                            <span>Skor Terbaik: {mod.bestPercentage}%</span>
                           </span>
                         )}
                       </div>
                     </div>
 
                     {/* Description */}
-                    <p className="text-xs text-slate-400 leading-relaxed line-clamp-3 mb-6">
-                      {mod.description}
+                    <p className="text-xs text-slate-400 leading-relaxed line-clamp-2 sm:line-clamp-3 mb-5 break-words">
+                      {mod.description || 'Materi pembelajaran interaktif seru untuk dieksplorasi!'}
                     </p>
                   </div>
 
                   {/* Card Bottom CTA */}
-                  <div className="pt-4 border-t border-slate-800/80 flex items-center justify-between">
-                    <span className="text-[11px] text-slate-500">
+                  <div className="pt-3.5 border-t border-slate-800/80 flex items-center justify-between gap-2 mt-auto">
+                    <span className="text-[11px] text-slate-500 truncate min-w-0">
                       {mod.attempts > 0 ? `Sudah dicoba ${mod.attempts}x` : 'Belum pernah dicoba'}
                     </span>
 
                     <button
                       onClick={() => onStartModule(mod)}
-                      className="btn-fun inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-bold text-xs shadow-lg shadow-indigo-500/25 transition-all font-fun"
+                      className="btn-fun inline-flex items-center justify-center gap-1.5 sm:gap-2 px-4 sm:px-5 py-2 sm:py-2.5 rounded-2xl bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-bold text-xs shadow-lg shadow-indigo-500/25 transition-all font-fun shrink-0 active:scale-95"
                     >
-                      <Play className="w-3.5 h-3.5 fill-current" />
+                      <Play className="w-3.5 h-3.5 fill-current shrink-0" />
                       <span>{hasCompleted ? 'Main Lagi' : 'Mulai Belajar'}</span>
                     </button>
                   </div>

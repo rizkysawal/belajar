@@ -64,3 +64,9 @@
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(148, 163, 184, 0.8);
 }
+
+/* Ensure proper word break for long module titles */
+.break-words {
+  overflow-wrap: break-word;
+  word-break: break-word;
+}

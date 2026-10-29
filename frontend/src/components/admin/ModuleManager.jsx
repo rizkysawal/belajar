@@ -429,7 +429,10 @@ export default function ModuleManager({
                   </div>
 
                   {/* Title */}
-                  <h4 className="text-base font-bold font-fun text-white mb-1.5 line-clamp-1">
+                  <h4 
+                    className="text-base font-bold font-fun text-white mb-1.5 line-clamp-2 leading-snug break-words"
+                    title={mod.title}
+                  >
                     {mod.title}
                   </h4>
 
